@@ -1,4 +1,4 @@
-package gre.lab2.groupX;
+package gre.lab2.groupE;
 
 import gre.lab2.graph.BFYResult;
 import gre.lab2.graph.IBellmanFordYensAlgorithm;
