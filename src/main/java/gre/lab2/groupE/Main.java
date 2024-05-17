@@ -6,16 +6,21 @@ import gre.lab2.graph.WeightedDigraphReader;
 
 import java.io.IOException;
 
+/**
+ * Displays the result of the BellmanFordYensAlgorithm
+ *
+ * @author Ançay Rémi
+ * @author Hutzli Boris
+ */
 public final class Main {
   public static void main(String[] args) throws IOException {
-    // TODO
-    //  - Documentation soignée comprenant :
-    //    - la javadoc, avec auteurs et description des implémentations ;
-    //    - des commentaires sur les différentes parties de vos algorithmes.
-
+    // Instantiate the algorithm
     BellmanFordYensAlgorithm bfy = new BellmanFordYensAlgorithm();
+
+    // Read a weighted directed graph from a file
     WeightedDigraph wd = WeightedDigraphReader.fromFile("data/reseau4.txt");
 
+    // Apply the BFY algorithm on the graph
     BFYResult result = bfy.compute(wd, 0);
 
     // Print the result if there are less than 25 vertices
