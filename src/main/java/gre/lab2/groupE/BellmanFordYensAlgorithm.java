@@ -12,49 +12,50 @@ import java.util.Queue;
 public final class BellmanFordYensAlgorithm implements IBellmanFordYensAlgorithm {
   @Override
   public BFYResult compute(WeightedDigraph graph, int from) {
-    //Bellman Ford Yens Algorythme
+    final int SENTINEL = -2;
+    final int INFINITE = Integer.MAX_VALUE;
+    final int UNREACHABLE = -1;
 
+    //Bellman Ford Yens Algorythme
     int[] predecessors = new int[graph.getNVertices()];
     int[] distances = new int[graph.getNVertices()];
     int interCounter = 0;
-    final int SENTINEL = -2;
 
     for (int j = 0; j < graph.getNVertices(); j++)
     {
-      distances[j] = Integer.MAX_VALUE;
-      predecessors[j] = -1; //Represent null value
+      distances[j] = INFINITE;
+      predecessors[j] = UNREACHABLE;
     }
     distances[from] = 0;
 
-    Queue<Integer> verticesToIterate = new ArrayDeque<>();
+    Queue<Integer> verticesToIterate = new ArrayDeque<>(); //Queue to store the vertices to iterate
+    boolean[] visitedVerticeToIterate = new boolean[graph.getNVertices()];
+
 
     verticesToIterate.add(from);
+    visitedVerticeToIterate[from] = true;
     verticesToIterate.add(SENTINEL);
 
     while (!verticesToIterate.isEmpty())
     {
-      int vertex= verticesToIterate.remove();
+      int vertex = verticesToIterate.remove();
       if (vertex == SENTINEL)
       {
         if(!verticesToIterate.isEmpty())
         {
           interCounter++;
-          if(interCounter == graph.getNVertices())
+          if(interCounter == graph.getNVertices()) //If true : There is a negative cycle
           {
-            //Negative Cycle
-            //TODO
-            //regarder le premier sommet dans verticesToIterate
-            //remonter l'arboraissance des prédessesseur et trouver la boucle
-
-            //Remontage des prédécesseurs
-            Queue<Integer> verticesFound = new ArrayDeque<>();
-            boolean[] visited = new boolean[graph.getNVertices()];
+            //Backtracking the predecessors to find the negative cycle
+            Queue<Integer> verticesFound = new ArrayDeque<>(); //Queue to store the vertices found
+            boolean[] visited = new boolean[graph.getNVertices()]; //Array to store the visited vertices
 
             int vertexFound = verticesToIterate.remove();
             verticesFound.add(vertexFound);
             visited[vertexFound] = true;
 
-            while(predecessors[vertexFound] != -1)
+            //Backtracking the predecessors
+            while(predecessors[vertexFound] != UNREACHABLE)
             {
               vertexFound = predecessors[vertexFound];
               if(visited[vertexFound])
@@ -65,7 +66,7 @@ public final class BellmanFordYensAlgorithm implements IBellmanFordYensAlgorithm
               visited[vertexFound] = true;
             }
 
-            //Recherche de la boucle
+            //Storing the negative cycle
             ArrayList<Integer> negativeCycle = new ArrayList<>();
             while (vertexFound != verticesFound.peek())
             {
@@ -77,9 +78,8 @@ public final class BellmanFordYensAlgorithm implements IBellmanFordYensAlgorithm
               negativeCycle.addFirst(verticesFound.remove());
             }
 
-            //Calcul de la longueur de la boucle
+            //Calculating the negative cycle length
             int negativeCycleLength = 0;
-
             for (int i = 0; i < negativeCycle.size(); i++)
             {
                 for (WeightedDigraph.Edge edge : graph.getOutgoingEdges(negativeCycle.get(i)))
@@ -92,7 +92,6 @@ public final class BellmanFordYensAlgorithm implements IBellmanFordYensAlgorithm
                 }
             }
 
-
             return new BFYResult.NegativeCycle(negativeCycle, negativeCycleLength);
           }
           else
@@ -103,16 +102,19 @@ public final class BellmanFordYensAlgorithm implements IBellmanFordYensAlgorithm
       }
       else
       {
+        visitedVerticeToIterate[vertex] = false;
+
         for (WeightedDigraph.Edge successor : graph.getOutgoingEdges(vertex))
         {
           if(distances[successor.to()] > distances[vertex] + successor.weight())
           {
             distances[successor.to()] = distances[vertex] + successor.weight();
             predecessors[successor.to()] = vertex;
-            //TO CHANGE
-            if(!verticesToIterate.contains(successor.to()))
+
+            if(!visitedVerticeToIterate[successor.to()])
             {
               verticesToIterate.add(successor.to());
+              visitedVerticeToIterate[successor.to()] = true;
             }
           }
         }
