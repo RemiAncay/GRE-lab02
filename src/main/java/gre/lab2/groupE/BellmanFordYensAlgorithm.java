@@ -46,7 +46,54 @@ public final class BellmanFordYensAlgorithm implements IBellmanFordYensAlgorithm
             //regarder le premier sommet dans verticesToIterate
             //remonter l'arboraissance des prédessesseur et trouver la boucle
 
-            return new BFYResult.NegativeCycle(new ArrayList<>(1), 1);
+            //Remontage des prédécesseurs
+            Queue<Integer> verticesFound = new ArrayDeque<>();
+            boolean[] visited = new boolean[graph.getNVertices()];
+
+            int vertexFound = verticesToIterate.remove();
+            verticesFound.add(vertexFound);
+            visited[vertexFound] = true;
+
+            while(predecessors[vertexFound] != -1)
+            {
+              vertexFound = predecessors[vertexFound];
+              if(visited[vertexFound])
+              {
+                break;
+              }
+              verticesFound.add(vertexFound);
+              visited[vertexFound] = true;
+            }
+
+            //Recherche de la boucle
+            ArrayList<Integer> negativeCycle = new ArrayList<>();
+            while (vertexFound != verticesFound.peek())
+            {
+              verticesFound.remove();
+            }
+
+            while (!verticesFound.isEmpty())
+            {
+              negativeCycle.addFirst(verticesFound.remove());
+            }
+
+            //Calcul de la longueur de la boucle
+            int negativeCycleLength = 0;
+
+            for (int i = 0; i < negativeCycle.size(); i++)
+            {
+                for (WeightedDigraph.Edge edge : graph.getOutgoingEdges(negativeCycle.get(i)))
+                {
+                    if(edge.to() == negativeCycle.get((i+1) % negativeCycle.size()))
+                    {
+                    negativeCycleLength += edge.weight();
+                    break;
+                    }
+                }
+            }
+
+
+            return new BFYResult.NegativeCycle(negativeCycle, negativeCycleLength);
           }
           else
           {
