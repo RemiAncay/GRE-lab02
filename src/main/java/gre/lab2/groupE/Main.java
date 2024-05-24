@@ -18,17 +18,22 @@ public final class Main {
     BellmanFordYensAlgorithm bfy = new BellmanFordYensAlgorithm();
 
     // Read a weighted directed graph from a file
-    WeightedDigraph wd = WeightedDigraphReader.fromFile("data/reseau4.txt");
+    WeightedDigraph wd = WeightedDigraphReader.fromFile("data/reseau6.txt");
 
     // Apply the BFY algorithm on the graph
     BFYResult result = bfy.compute(wd, 0);
 
     // Print the result if there are less than 25 vertices
     if (result.isNegativeCycle() || result.getShortestPathTree().distances().length <= 25) {
+      if (result.isNegativeCycle()) {
+        System.out.println("The graph contains a negative cycle which is the following:");
+      } else {
+        System.out.println("The graph doesn't contain any negative cycles and have the following distances and predecessors:");
+      }
       System.out.println(result);
     }
     else {
-      System.out.println("The graph is too large to print the result. (more than 25 vertices)");
+      System.out.println("The graph doesn't contain any negative cycles but is too large to print the result. (more than 25 vertices)");
     }
   }
 }

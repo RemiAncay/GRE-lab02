@@ -22,9 +22,6 @@ public final class BellmanFordYensAlgorithm implements IBellmanFordYensAlgorithm
   /** Infinite value */
   private final int INFINITE = Integer.MAX_VALUE;
 
-  /** Unreachable vertex value */
-  private final int UNREACHABLE = -1;
-
   @Override
   public BFYResult compute(WeightedDigraph graph, int from) {
 
@@ -47,7 +44,7 @@ public final class BellmanFordYensAlgorithm implements IBellmanFordYensAlgorithm
     for (int j = 0; j < graph.getNVertices(); j++)
     {
       distances[j] = INFINITE;
-      predecessors[j] = UNREACHABLE;
+      predecessors[j] = BFYResult.UNREACHABLE;
     }
     distances[from] = 0;
 
@@ -92,7 +89,7 @@ public final class BellmanFordYensAlgorithm implements IBellmanFordYensAlgorithm
             visited[vertexFound] = true;
 
             //Backtracking the predecessors
-            while(predecessors[vertexFound] != UNREACHABLE)
+            while(predecessors[vertexFound] != BFYResult.UNREACHABLE)
             {
               vertexFound = predecessors[vertexFound];
               if(visited[vertexFound])
